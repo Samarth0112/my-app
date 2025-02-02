@@ -1,13 +1,12 @@
 import json
-import os
 from http.server import BaseHTTPRequestHandler
 import urllib.parse
 
 # Load student data from the JSON file
 def load_data():
-    file_path = os.path.join(os.path.dirname(__file__), "q-vercel-python.json")
-    with open(file_path, "r") as file:
-        return json.load(file)
+    with open('q-vercel-python.json', 'r') as file:
+        data = json.load(file)
+    return data
 
 # Handler class to process incoming requests
 class handler(BaseHTTPRequestHandler):
@@ -17,7 +16,6 @@ class handler(BaseHTTPRequestHandler):
 
         # Get 'name' parameters from the query string
         names = query.get('name', [])
-        names = [name for sublist in names for name in sublist]  # Flatten list
 
         # Load data from the JSON file
         data = load_data()
@@ -29,10 +27,6 @@ class handler(BaseHTTPRequestHandler):
             for entry in data:
                 if entry["name"] == name:
                     result["marks"].append(entry["marks"])
-
-        # Ensure response consistency
-        if not result["marks"]:
-            result["marks"] = ["Not Found"]
 
         # Send the response header
         self.send_response(200)
