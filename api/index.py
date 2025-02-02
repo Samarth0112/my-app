@@ -5,12 +5,9 @@ def load_data():
     with open("q-vercel-python.json", "r") as file:
         return json.load(file)
 
-def handler(event, context):
-    query_string = event.get("queryStringParameters", {})
-    names = query_string.get("name", [])
-
-    if isinstance(names, str):  # Ensure 'name' is a list even if a single value is provided
-        names = [names]
+def handler(request):
+    query_string = request.args
+    names = query_string.getlist("name")
 
     data = load_data()
     
@@ -20,11 +17,4 @@ def handler(event, context):
             if entry["name"] == name:
                 result["marks"].append(entry["marks"])
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"  # Enable CORS
-        },
-        "body": json.dumps(result)
-    }
+    return json.dumps(result), 200, {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}
